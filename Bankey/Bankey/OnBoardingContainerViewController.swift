@@ -11,18 +11,15 @@ class OnBoardingContainerViewController : UIViewController {
     
     var pageViewController: UIPageViewController
     var pages = [UIViewController]()
-    var currentVC: UIViewController {
-        didSet {
-            
-        }
-    }
+    var currentVC: UIViewController
+    var closeButton = UIButton(type: .system)
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         self.pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         
-        let page1 = ViewController1()
-        let page2 = ViewController2()
-        let page3 = ViewController3()
+        let page1 = OnBoardingViewController(labelText: "Hello, bankey is fucking great app you can download and enjoy more than million english pounds yearly", imageName: "delorean")
+        let page2 = OnBoardingViewController(labelText: "Hello, bankey is fucking great app you can download and enjoy more than million english pounds yearly", imageName: "world")
+        let page3 = OnBoardingViewController(labelText: "Hello, bankey is fucking great app you can download and enjoy more than million english pounds yearly", imageName: "thumbs")
         
         pages.append(page1)
         pages.append(page2)
@@ -39,14 +36,28 @@ class OnBoardingContainerViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemGray
+        setup()
+        style()
+        layout()
+        
+    }
+    
+    private func setup() {
+        view.backgroundColor = .systemPurple
         addChild(pageViewController)
         view.addSubview(pageViewController.view)
         pageViewController.didMove(toParent: self)
         
         pageViewController.dataSource = self
-        pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
         
+        
+        pageViewController.setViewControllers([pages.first!], direction: .forward, animated: true, completion: nil)
+        currentVC = pages.first!
+    }
+    
+    private func layout() {
+        
+        //Page View
         NSLayoutConstraint.activate([
             view.topAnchor.constraint(equalTo: pageViewController.view.topAnchor),
             view.leadingAnchor.constraint(equalTo: pageViewController.view.leadingAnchor),
@@ -54,8 +65,20 @@ class OnBoardingContainerViewController : UIViewController {
             view.bottomAnchor.constraint(equalTo: pageViewController.view.bottomAnchor)
         ])
         
-        pageViewController.setViewControllers([pages.first!], direction: .forward, animated: true, completion: nil)
-        currentVC = pages.first!
+        //Close Button
+        NSLayoutConstraint.activate([
+            closeButton.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 2),
+            closeButton.topAnchor.constraint(equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 2)
+        ])
+    }
+    
+    private func style() {
+        pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.addTarget(self, action: #selector(closeClicked), for: .primaryActionTriggered)
+        closeButton.setTitle("Close", for: [])
+        view.addSubview(closeButton)
     }
 }
 
@@ -92,24 +115,9 @@ extension OnBoardingContainerViewController: UIPageViewControllerDataSource {
 }
 
 
-class ViewController1: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemTeal
+//MARK: - Actions
+extension OnBoardingContainerViewController {
+    @objc func closeClicked() {
+        print("close clicked")
     }
 }
-
-class ViewController2: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemCyan
-    }
-}
-
-class ViewController3: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .systemMint
-    }
-}
-
